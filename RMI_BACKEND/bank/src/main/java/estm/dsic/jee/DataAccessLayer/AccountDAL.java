@@ -55,8 +55,34 @@ public class AccountDAL  {
     }
 
    
-    public boolean transfer(int senderUserId, String receiverUsername, double amount) throws RemoteException {
-        // You need to implement this method according to your business logic
-        return true;
+    public boolean transfer(int senderUserId, int receiverUserId, double amount) throws RemoteException {
+        try (Connection connection = DatabaseUtil.getConnection()) {
+            // Start a transaction to ensure atomicity of the transfer
+            connection.setAutoCommit(false);
+    
+            // Deduct amount from sender's account
+            boolean senderSuccess = withdraw(senderUserId, amount);
+            // If deduction from sender's account fails, rollback the transaction and return false
+            if (!senderSuccess) {
+                connection.rollback();
+                return false;
+            }
+    
+            // Add amount to receiver's account
+            boolean receiverSuccess = deposit(receiverUserId, amount);
+            // If addition to receiver's account fails, rollback the transaction and return false
+            if (!receiverSuccess) {
+                connection.rollback();
+                return false;
+            }
+    
+            // Commit the transaction if both operations succeed
+            connection.commit();
+            return true;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
+    
 }

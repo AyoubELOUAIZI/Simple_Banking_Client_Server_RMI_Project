@@ -30,5 +30,25 @@ public class UserDAL {
             return null;
         }
     }
+
+    public int getUserIdByUsername(String username) {
+        try (Connection conn = DatabaseUtil.getConnection();
+             PreparedStatement stmt = conn.prepareStatement("SELECT user_id FROM user WHERE username = ?")) {
+            stmt.setString(1, username);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    // User found, return the user ID
+                    return rs.getInt("user_id");
+                } else {
+                    // User not found, return -1
+                    return -1;
+                }
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+    
 }
 

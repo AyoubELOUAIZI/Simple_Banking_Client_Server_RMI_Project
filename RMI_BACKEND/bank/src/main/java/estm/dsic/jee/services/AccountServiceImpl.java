@@ -7,10 +7,12 @@ import estm.dsic.jee.DataAccessLayer.AccountDAL;
 
 public class AccountServiceImpl extends UnicastRemoteObject implements AccountService {
     private AccountDAL accountDAL;
+    private UserServiceImpl userServiceImpl=new UserServiceImpl();
+   
 
-    public AccountServiceImpl(AccountDAL accountDAL) throws RemoteException {
+    public AccountServiceImpl() throws RemoteException {
         super();
-        this.accountDAL = accountDAL;
+        this.accountDAL = new AccountDAL();
     }
 
     @Override
@@ -30,7 +32,29 @@ public class AccountServiceImpl extends UnicastRemoteObject implements AccountSe
 
     @Override
     public boolean transfer(int senderUserId, String receiverUsername, double amount) throws RemoteException {
-        // You need to implement this method according to your business logic
-        return true;
+       
+        System.out.println("the transfer is started just right now...");
+       
+        // Step 1: Retrieve the receiver's user ID using their username
+        int receiverUserId = userServiceImpl.getUserIdByUsername(receiverUsername);
+        if (receiverUserId == -1) {
+            // Receiver does not exist
+            return false;
+        }
+    
+        // Step 2: Verify that the amount is less than or equal to the sender's balance
+        double senderBalance = checkBalance(senderUserId);
+        if (amount > senderBalance) {
+            // Insufficient balance in the sender's account
+            return false;
+        }
+    
+        // Step 3: Update balances for both sender and receiver
+        boolean senderSuccess = withdraw(senderUserId, amount);
+        boolean receiverSuccess = deposit(receiverUserId, amount);
+    
+        // Return true if both operations succeed, false otherwise
+        return senderSuccess && receiverSuccess;
     }
+    
 }

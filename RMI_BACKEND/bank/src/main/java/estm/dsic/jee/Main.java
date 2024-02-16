@@ -8,6 +8,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 
+import estm.dsic.jee.services.AccountServiceImpl;
 import estm.dsic.jee.services.AuthenticationServiceImpl;
 
 
@@ -16,11 +17,13 @@ public class Main {
         try {
             BankAccountImpl bankAccount = new BankAccountImpl();
             AuthenticationServiceImpl authenticationService = new AuthenticationServiceImpl();
+            AccountServiceImpl accountService = new AccountServiceImpl();
             
             Registry registry = LocateRegistry.createRegistry(52369);
             
             Naming.rebind("rmi://" + InetAddress.getLocalHost().getHostAddress() + ":52369/BankAccount", bankAccount);
             Naming.rebind("rmi://" + InetAddress.getLocalHost().getHostAddress() + ":52369/AuthenticationService", authenticationService);
+            Naming.rebind("rmi://" + InetAddress.getLocalHost().getHostAddress() + ":52369/AccountService", accountService);
             
             System.out.println("Server is running and waiting for client calls...");
         } catch (RemoteException | UnknownHostException | MalformedURLException e) {
