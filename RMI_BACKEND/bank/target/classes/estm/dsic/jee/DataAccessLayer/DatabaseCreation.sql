@@ -30,9 +30,9 @@ CREATE TABLE IF NOT EXISTS historic (
 
 -- Inserting data into user table
 INSERT INTO user (username, password) VALUES
-('user1', 'password1'),
-('user2', 'password2'),
-('user3', 'password3');
+('user1@gmail.com', 'password1'),
+('user2@gmail.com', 'password2'),
+('user3@gmail.com', 'password3');
 
 -- Inserting data into account table
 INSERT INTO account (user_id, balance) VALUES
